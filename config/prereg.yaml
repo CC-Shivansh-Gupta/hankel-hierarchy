@@ -1,0 +1,114 @@
+# Frozen analysis parameters for PREREGISTRATION.md (protocol v1).
+# scripts/verdict.py reads thresholds from this file only.
+# Any change after the preregistration commit is a deviation (PREREGISTRATION.md §14).
+
+protocol_version: 1
+
+models:
+  family: tdmpc2-single-task-state
+  code_repo: https://github.com/nicklashansen/tdmpc2
+  code_commit: e9f59321933cbc8e11a002b842adc7d4ffae8ff1   # 2026-07-13, "fix q ensemble weight init"
+  checkpoint_source: https://huggingface.co/nicklashansen/tdmpc2/tree/8fb2a82efb3bae96941da440128fe1332e4394fd/dmcontrol
+  checkpoint_revision: 8fb2a82efb3bae96941da440128fe1332e4394fd   # HF repo commit, 2023-10-26
+  model_size: 5
+  tasks: [walker-walk, cheetah-run, hopper-hop, quadruped-run, humanoid-walk, finger-spin]
+  seeds: [1, 2, 3]
+  checkpoint_sha256:                        # Git LFS oid at checkpoint_revision = SHA-256 of file bytes
+    walker-walk-1.pt: 6b22a70c41e1cf49a8875457afb8b1f643fcba0c6a1f9c3b2e289790e7d8a64b
+    walker-walk-2.pt: e315148d79f4e48232609bd7947ffb6995a27ad67295e93fc0f6acfcbc42bf97
+    walker-walk-3.pt: dba5a0545862ef5aa92b334ae43daae76294a4dedaee3d804f5f87134e8670d3
+    cheetah-run-1.pt: 906924fee08bf43743b01f187db5cd9f355d717395c399f754c5ee4e4782b059
+    cheetah-run-2.pt: aa18d1ca1feaad68f503b267e6de7bdfe7b1cf46213c0aa90ed0985d1d1fdb67
+    cheetah-run-3.pt: 6ed9ba2730f75743ae27532a8e270c9de4769b2047855e32af565200fed74605
+    hopper-hop-1.pt: 9b77ded72d6f8be6b5e348bcc81cb7119b28719f736dffd06a3cb129fa84a1ad
+    hopper-hop-2.pt: b7f0afe711f7c7e694037326f9685b898eb8ca6bb863148af67e411a70398f4e
+    hopper-hop-3.pt: b4e6b6efeb324e0a909e235fa60703eec8e218c49e1075855c5adbf421292873
+    quadruped-run-1.pt: 1e88dc6b2e9872832c017bdff1dad16c9cbf6c2a2c32c12d8a3b54da0b6d235c
+    quadruped-run-2.pt: 4ab12c2c16d8e9e57593875e042b9e9e6a6824c964c2dd127241538920456c9a
+    quadruped-run-3.pt: 663118f1af07f6c672500ebdfbbe6ebb094a373d343f732f1356f46cabe0c093
+    humanoid-walk-1.pt: 209a5342639e0d3bb9751251b314dfaed06fff60ee03f1b89728ab24ca0a5f5c
+    humanoid-walk-2.pt: 580ef75835079156351251da7abe891583061fe1666a0913c3502180af43aa93
+    humanoid-walk-3.pt: efc70323d60b08a09cce4bc36881101456c80d28e376407bdf33d78ea884c659
+    finger-spin-1.pt: a47432763105c423a17c87db29c03d2257a76bd45f28f128e30921394e46e22a
+    finger-spin-2.pt: d9e8298f594e659ab53ee410c0a8e09d962dacb6828ed2a91e155ea83ed434a7
+    finger-spin-3.pt: 1e170152d6590ccf8d3c696cfc3b3f0deaeea360e00483f8131460aae0891ffa
+  architecture_expected:                    # verify against pinned code before freeze
+    latent_dim: 512
+    simnorm_group: 8
+    dynamics_ends_in_simnorm: true
+    num_q: 5
+    num_bins: 101
+    value_bins_symlog_range: [-10, 10]
+    q_dropout_first_layer: 0.01             # off in eval mode
+    encoder_ends_in_simnorm: true
+    episode_length_agent_steps: 500
+    action_repeat: 2
+  secondary_dreamerv3:
+    enabled: false                          # no official public DMControl checkpoint found (26 Sep 2026)
+    checkpoint_sha256: {}
+
+rollouts:
+  episodes_per_model: 10
+  env_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+  torch_seed_equals_env_seed: true
+  action_selection: released_eval_mode_mppi
+  linearise_at: encoded_real_states
+  network_mode: eval                        # dropout off for every Jacobian
+  q_params: online                          # _Qs, not the target copy
+
+anchors:
+  stride: 10
+  margin: 128                               # = max horizon; identical anchors at every H
+  per_episode: 25                           # tau = 128, 138, ..., 368 with T = 500
+
+tangent_projection:
+  remove_simnorm_group_sum_directions: true # n = 512 - 64 = 448
+
+output_map:
+  primary: q_ensemble_mean_partial_dz       # d/dz of mean_i symexp(E[Q_i]), action held fixed
+
+gramians:
+  dtype: float64
+  primary_horizon: 64
+  robustness_horizons: [32, 128]
+  pooling: mean_of_per_anchor_gramians
+  hsv_method: square_root_svd
+  numerical_floor_rel: 1.0e-6
+
+gap:
+  k_min: 2
+  k_max_fraction_of_H: 0.5
+  min_log10_drop: 1.0
+  local_window: 8
+  min_ratio_to_local_median_drop: 3.0
+  horizon_reappearance_tolerance: 0.25
+  seed_agreement:
+    min_seeds: 2
+    k_tolerance: 0.25
+  random_init_controls:
+    torch_seeds: [1000, 1001, 1002]
+    families:
+      r_full:                               # all weights random
+        reinit_zeroed_q_final_layer: trunc_normal_std_0.02_zero_bias   # else C == 0 exactly
+      r_dyn:                                # random dynamics, trained Q-ensemble as C
+        output_map_from: trained
+    max_reproducing_per_family: 1           # gap invalid if >= 2 of 3 reproduce it in EITHER family
+
+pca_control:
+  spearman_collapse_threshold: 0.9          # collapse if rho_S > 0.9
+  principal_angle_collapse_deg: 15.0        # collapse if theta_pca < 15
+  collapse_rule: either_test
+  k_if_task_failed_gate_a: 16
+
+stability:
+  horizon: 64
+  max_mean_angle_deg: 30.0
+
+decision:
+  min_seeds_per_task: 2                     # of 3
+  min_tasks_per_gate: 4                     # of 6
+  overall: all_of [A, B, C]
+
+synthetic_validation:
+  hsv_rel_tol: 1.0e-8
+  cases: [random_stable_lti, planted_knee, smooth_exponential_decay_no_gap]
