@@ -59,6 +59,7 @@ def import_tdmpc2(path):
 	from common.parser import parse_cfg
 	from common.seed import set_seed
 	from common.world_model import WorldModel
+	import envs.dmcontrol  # noqa: F401  (envs/__init__ swallows this import's errors; surface them here)
 	from envs import make_env
 	from tdmpc2 import TDMPC2
 	return dict(OmegaConf=OmegaConf, parse_cfg=parse_cfg, set_seed=set_seed, make_env=make_env,
