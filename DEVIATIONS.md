@@ -82,7 +82,7 @@ seed 3. Each control is evaluated at its paired seed's anchor states and actions
 
 **C11. Simulator versions (§3 environment record).** The pinned TD-MPC2 environment file lists dm-control 1.0.16 and
 mujoco 3.1.2. Both predate NumPy 2 and fail to import on the run platform (Kaggle, NumPy 2). The run uses dm-control
-1.0.24 and mujoco 3.2.3. §3 records versions in `ENVIRONMENT.txt` and does not pin them. The checkpoints were trained
+1.0.24 and mujoco 3.2.4 (its paired release). §3 records versions in `ENVIRONMENT.txt` and does not pin them. The checkpoints were trained
 on an earlier simulator. Episode returns are reported next to the published TD-MPC2 curves (`results/tdmpc2/*.csv` in
 the pinned repo), so any drift in behaviour is visible. Returns carry no verdict role. *(Decided before any checkpoint
 was loaded.)*
