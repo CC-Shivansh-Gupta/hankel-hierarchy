@@ -4,3 +4,4 @@ __pycache__/
 ext/
 ckpt/
 results/work/
+*.tgz

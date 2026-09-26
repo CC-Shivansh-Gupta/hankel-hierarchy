@@ -1,0 +1,14 @@
+{
+ "gramian": {
+  "k": 16,
+  "rho_s": 0.6293308900104141,
+  "theta_pca_deg": 80.52877258492079,
+  "collapse": false
+ },
+ "factor": {
+  "k": 16,
+  "rho_s": 0.6293308900104141,
+  "theta_pca_deg": 80.5287725849208,
+  "collapse": false
+ }
+}

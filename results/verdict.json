@@ -1,0 +1,379 @@
+{
+ "protocol_version": 1,
+ "verdict_of_record_route": "gramian",
+ "overall_survives": false,
+ "gates": {
+  "A": false,
+  "B": true,
+  "C": false
+ },
+ "counts_of_6_tasks": {
+  "A": 0,
+  "B": 6,
+  "C": 0
+ },
+ "tasks": {
+  "walker-walk": {
+   "A": {
+    "pass": false,
+    "seed_kstars": [
+     null,
+     null,
+     null
+    ],
+    "reason": "too few seeds with a gap"
+   },
+   "B": {
+    "divergence": true,
+    "k": 16
+   },
+   "C": {
+    "stable": false,
+    "k": 16
+   }
+  },
+  "cheetah-run": {
+   "A": {
+    "pass": false,
+    "seed_kstars": [
+     null,
+     null,
+     null
+    ],
+    "reason": "too few seeds with a gap"
+   },
+   "B": {
+    "divergence": true,
+    "k": 16
+   },
+   "C": {
+    "stable": false,
+    "k": 16
+   }
+  },
+  "hopper-hop": {
+   "A": {
+    "pass": false,
+    "seed_kstars": [
+     null,
+     null,
+     null
+    ],
+    "reason": "too few seeds with a gap"
+   },
+   "B": {
+    "divergence": true,
+    "k": 16
+   },
+   "C": {
+    "stable": false,
+    "k": 16
+   }
+  },
+  "quadruped-run": {
+   "A": {
+    "pass": false,
+    "seed_kstars": [
+     null,
+     null,
+     null
+    ],
+    "reason": "too few seeds with a gap"
+   },
+   "B": {
+    "divergence": true,
+    "k": 16
+   },
+   "C": {
+    "stable": false,
+    "k": 16
+   }
+  },
+  "humanoid-walk": {
+   "A": {
+    "pass": false,
+    "seed_kstars": [
+     null,
+     null
+    ],
+    "reason": "too few seeds with a gap"
+   },
+   "B": {
+    "divergence": true,
+    "k": 16
+   },
+   "C": {
+    "stable": false,
+    "k": 16
+   }
+  },
+  "finger-spin": {
+   "A": {
+    "pass": false,
+    "seed_kstars": [
+     null,
+     null,
+     null
+    ],
+    "reason": "too few seeds with a gap"
+   },
+   "B": {
+    "divergence": true,
+    "k": 16
+   },
+   "C": {
+    "stable": false,
+    "k": 16
+   }
+  }
+ },
+ "routes": {
+  "gramian": {
+   "overall_survives": false,
+   "gates": {
+    "A": false,
+    "B": true,
+    "C": false
+   },
+   "tasks": {
+    "walker-walk": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "cheetah-run": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "hopper-hop": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "quadruped-run": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "humanoid-walk": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "finger-spin": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    }
+   }
+  },
+  "factor": {
+   "overall_survives": false,
+   "gates": {
+    "A": false,
+    "B": true,
+    "C": false
+   },
+   "tasks": {
+    "walker-walk": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "cheetah-run": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "hopper-hop": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "quadruped-run": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "humanoid-walk": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    },
+    "finger-spin": {
+     "A": {
+      "pass": false,
+      "seed_kstars": [
+       null,
+       null,
+       null
+      ],
+      "reason": "too few seeds with a gap"
+     },
+     "B": {
+      "divergence": true,
+      "k": 16
+     },
+     "C": {
+      "stable": false,
+      "k": 16
+     }
+    }
+   }
+  }
+ },
+ "routes_agree": true
+}
