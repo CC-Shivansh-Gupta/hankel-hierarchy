@@ -56,3 +56,26 @@ agreeing seeds. *(Reading of "each k\* within ±25% of those seeds' median k\*".
 robustness horizon must lie within ±25% of the primary k\*. It does not have to be the largest drop at that horizon. *(Literal reading.)*
 
 **C5. "Within ±25%"** is inclusive: |k − k_ref| ≤ 0.25 · k_ref.
+
+**C6. Half-integer task k (§8).** With two agreeing seeds, the median k\* can be a half-integer. k is then rounded
+half-up. *(Neutral.)*
+
+**C7. "Released evaluation mode" (§4).** Actions come from `agent.act(obs, t0, eval_mode=True)`, the call the pinned
+code's own evaluation loops use (`trainer/online_trainer.py`, `trainer/offline_trainer.py`). The pinned `evaluate.py`
+omits `eval_mode=True`, so it adds exploration noise to every action. That is not an evaluation mode.
+*(Reading of the text.)*
+
+**C8. Linearisation in float64 (§3, §5).** Rollouts run in the released float32 agent, unmodified. Linearisation uses a
+float64 copy of the same weights. Each z_t is re-encoded in float64 from the observation the float32 agent saw, and
+A, B and C are taken by autograd at (z_t, a_t). C is one backward pass through Q̄, and A and B come from
+`torch.func.jacrev` of the dynamics. *(Follows "all linear algebra runs in float64".)*
+
+**C9. Engineering smoke test before the diagnostic run (§13).** `collect_anchors.py --smoke` runs the real
+TD-MPC2 code path on a **random-initialisation network at torch seed 999**. That seed is not one of the control seeds,
+and no checkpoint is loaded. It checks Jacobians against finite differences, float32 against float64, rollout
+determinism, array shapes, and that the constructor's Q head gives C ≡ 0. It computes **no Gramian, HSV or spectrum**.
+§13's rule is about validating the *analysis*. This test validates the plumbing and cannot inform any choice.
+
+**C10. Which anchor states a control uses (§7).** There are 3 controls per family per task and 3 trained seeds, each
+with its own anchor states. They are paired: torch seed 1000 with trained seed 1, 1001 with seed 2, and 1002 with
+seed 3. Each control is evaluated at its paired seed's anchor states and actions. *(Neutral.)*

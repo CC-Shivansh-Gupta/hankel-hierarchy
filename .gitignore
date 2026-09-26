@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 *.pt
+ext/
+ckpt/
+results/work/
