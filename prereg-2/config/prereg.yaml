@@ -1,0 +1,128 @@
+# Frozen parameters for prereg-2/PREREGISTRATION.md (protocol 2). DRAFT until the freeze commit.
+# Any change after the freeze is a deviation (prereg-2/DEVIATIONS.md).
+
+protocol_version: 2
+supersedes: none            # protocol 1 (0173614, rejected at f0e8c94) stands untouched
+inherits_from_protocol_1: [rollouts, linearisation, tangent_projection, anchors, output_map, environment_C11, C7, C8, C10]
+
+models:
+  family: tdmpc2-single-task-state
+  code_repo: https://github.com/nicklashansen/tdmpc2
+  code_commit: e9f59321933cbc8e11a002b842adc7d4ffae8ff1
+  checkpoint_source: https://huggingface.co/nicklashansen/tdmpc2/tree/8fb2a82efb3bae96941da440128fe1332e4394fd/dmcontrol
+  checkpoint_revision: 8fb2a82efb3bae96941da440128fe1332e4394fd
+  model_size: 5
+  heldout_tasks: [reacher-hard, finger-turn-hard, hopper-stand, walker-run, quadruped-walk, humanoid-run]
+  seeds: [1, 2, 3]
+  seeds_by_task:                            # humanoid-run seed 3 is pre-release layout (screen below): judged 2-of-2
+    reacher-hard: [1, 2, 3]
+    finger-turn-hard: [1, 2, 3]
+    hopper-stand: [1, 2, 3]
+    walker-run: [1, 2, 3]
+    quadruped-walk: [1, 2, 3]
+    humanoid-run: [1, 2]
+  layout_screen_done: true                  # 27 Sep 2026, state-dict keys only, torch weights_only loader, no forward pass
+  layout_screen_result:
+    new_layout: [reacher-hard-1.pt, reacher-hard-2.pt, reacher-hard-3.pt, finger-turn-hard-1.pt, finger-turn-hard-2.pt,
+                 finger-turn-hard-3.pt, hopper-stand-1.pt, hopper-stand-2.pt, hopper-stand-3.pt, walker-run-1.pt,
+                 walker-run-2.pt, walker-run-3.pt, quadruped-walk-1.pt, quadruped-walk-2.pt, quadruped-walk-3.pt,
+                 humanoid-run-1.pt, humanoid-run-2.pt]
+    pre_release_layout: [humanoid-run-3.pt]
+    domain_matched_alternate_screened:
+      humanoid-stand: {new_layout: [humanoid-stand-1.pt, humanoid-stand-2.pt], pre_release_layout: [humanoid-stand-3.pt]}
+    decision: keep humanoid-run with seeds [1, 2], judged 2-of-2; no conversion; no cross-domain substitution
+  post_freeze_substitution: forbidden       # load failure => exclusion (2-of-2), never substitution
+  checkpoint_sha256:
+    reacher-hard-1.pt: 211ae7d3780518c792442c1f1aeee076b3b5130f78f4b46e9107febb7fc608be
+    reacher-hard-2.pt: ea05ddfddf3edabeda19faec87054a87ebb424c395834558baefe2e202f93349
+    reacher-hard-3.pt: 52e079d51c6f1110158031ce81a6c7a8007b7bdc974defdca65f4b733eeaebc7
+    finger-turn-hard-1.pt: fa8e320f69be4b1e4e6bf25ca712f2b227527b92e26d323ffc646011a27778c2
+    finger-turn-hard-2.pt: b55b3cedc5cdaacafa1ef2c79f1fff13f2f103ab17bbb27edbcc8bff6c48f068
+    finger-turn-hard-3.pt: d51c298874cb22da4393ed2f17e92618e0f0f349a2047e80141c24da12191239
+    hopper-stand-1.pt: f0ab064add252a4fa59557ba9e708b3c5903b6702718a6507b357fe8fcca8725
+    hopper-stand-2.pt: f1edc17ddff296260e37e05089f955bc798d2186096b2eb3786cd4c3c73f8ef9
+    hopper-stand-3.pt: 16bb665d2bb639a7f925d472cf8215e07f2810d2af04e291f9a71a77e00bf2fb
+    walker-run-1.pt: 7e825a2210ede7085a71f98893fe3f89a1acb9eedf234a7c43815c68ecc0150c
+    walker-run-2.pt: 0c45b6a5c3f7387a30b5e3ce2c57b8c4101b33affaae582204c2dbe451ce0caf
+    walker-run-3.pt: d8d0a635c5f49d951cd98a89125ee3ef205e01e631856a2d72a1288583d01089
+    quadruped-walk-1.pt: 7034ad98c1eb506252ece41ded8d1567571d1759cb7b193a04b97fa8d6546d45
+    quadruped-walk-2.pt: c3a00ee9272d654b7611dc851e44a179c6daf26241ab359e35f408a788e2e719
+    quadruped-walk-3.pt: 0035eaa5e5fac88e910c9ab15c8e02f4695bf2ed018bab3277ada7c7f46a13b7
+    humanoid-run-1.pt: 57f2c7e509d9efb677ae3f150e3e162c8f1a44ce2dfd34b7f4eb04a489e05c20
+    humanoid-run-2.pt: 7f6514a9519cbaec6f52f1319446fc74f74b1cda000ccf60026ce1663cd83db3
+    humanoid-run-3.pt: c262c177d9b748ef4f56397e334b8424cb0a1446c723f7b84526c09a8e106ffa
+  alternates_note: hashes of the pre-screen alternate pool, kept for the record; none is used
+  alternate_sha256:
+    walker-stand-1.pt: 90d4fbacc7cf98a09fb6e13bacf5ce141712d4bb6d710836121681a20cee16b2
+    walker-stand-2.pt: 28907db98f3eba18f2a7c3e54484ba2f2a434766c1e87b45963fc60cc3aaa8f8
+    walker-stand-3.pt: 369efb7f303e888a69a37967a9516b17826e53bbcf4a7a605a2bcf6c4bebc475
+    humanoid-stand-1.pt: ad12cd92843b88afd7119cfced3e3e15f3ed1a22568de137e74cdab4ff80fe1c
+    humanoid-stand-2.pt: b02dc4531cbe07bb26e8226132a194e6ac2d3a93a9045f3a1ebe7d927fc50746
+    humanoid-stand-3.pt: 0fc02a627fa7ffe278badaeb87586c0a16d3a26d12c3fcd1667d99345e10186e
+    finger-turn-easy-1.pt: 4302b7743cf252c9a323ecae747139f91f9875ca3c21aa931b22fc5f008e629f
+    finger-turn-easy-2.pt: ea59b93b67dec59540ec7e48508c173436f049410d47a495e6c5de727c40bac4
+    finger-turn-easy-3.pt: a62e6ad617b82c428ddea8289c659655143deabdf1f2e641f6a30b9e070e0aae
+    reacher-easy-1.pt: 4e415fc308fed6b46a944cbdbaf8f1551e73b43b2d6770c78f440bd36b61deb3
+    reacher-easy-2.pt: cefe61226625b7864f8f332e02c59a60fe9a54c0b2360af2bd7f93eadbe88bb7
+    reacher-easy-3.pt: d72b39d437066845ec7f077620399088997529b9c12475ab29e32d65da6bbd77
+    cheetah-jump-1.pt: aadfc5547a46c12523ed2bc165844d50f5f150d35da112efe8aad3c3eb928d74
+    cheetah-jump-2.pt: 1401b51dc1840945816820f376441875516a054794e5e1480d553f05c99e5ad9
+    cheetah-jump-3.pt: c9657e02b970032af47df26f0231cbcd26bad88f333e6b4346b62be8c3e8a3a0
+    hopper-hop-backwards-1.pt: e84f8972bf246301cb235b3c2343cde7f3b41ca6f27458b4148dce9628368f60
+    hopper-hop-backwards-2.pt: e9b17ee8c07a52db545340f7ffd06a5bc1fb9588d84344cf35ccb930be550ddc
+    hopper-hop-backwards-3.pt: 2b5249d339aefa32b4c0195e957b0a5f3606badbdee68fb4fb77bdfa926834cc
+  discovery_set: protocol-1 17 models (results/work at f0e8c94); exploratory only
+
+numerics:
+  primary_route: factor                     # protocol-1 D1, validated in advance
+  check_route: gramian
+  dtype: float64
+  numerical_floor_rel: 1.0e-6
+
+growth_quantity:
+  forward: norm2_Phi_tau_plus_H_tau
+  backward: norm2_Phi_tau_tau_minus_H
+  horizon: 64
+
+h2_1_growth_dominance:
+  primary_statistic: kappa_min_of_c_o
+  horizon: 64
+  k: 16
+  top_fraction: 0.10
+  min_energy_share: 0.5                     # both kappa_c and kappa_o
+  min_spearman_growth: 0.7                  # both rho_c and rho_o
+  min_bulk_minus_top_deg: 15.0
+  must_exceed_rfull_share: true
+
+h2_2_growth_normalised:
+  primary_statistic: theta_stab_growth_normalised
+  horizon: 64
+  k: 16
+  growth_rate: median_log_forward_phi_norm_over_H
+  pooling: equal_trace_per_anchor
+  max_theta_stab_deg: 30.0
+  min_margin_vs_rfull_deg: 15.0
+  reported_only: [gap_rule_protocol_1_s7, ablation_discount_only, ablation_equal_energy_only]
+
+h2_3_trajectory_conditioned:
+  primary_statistic: contrast_theta_far_minus_theta_near
+  horizon: 16
+  k: 4
+  near_offset: 40                           # > 2H = 32: non-overlapping windows
+  far_min_offset: 200
+  max_theta_near_deg: 30.0
+  min_contrast_deg: 15.0
+  min_contrast_margin_vs_rfull_deg: 10.0
+
+controls:
+  family: r_full_only
+  torch_seeds: [1000, 1001, 1002]           # paired with trained seeds 1/2/3 (C10); humanoid-run uses 1000, 1001
+
+decision:
+  min_seeds_per_task: 2
+  min_tasks: 4
+  per_hypothesis_verdicts: [H2.1, H2.2, H2.3]
+  overall_disjunction: false
+
+synthetic_validation:
+  cases: [S1_planted_dominance, S2_no_dominance, S3_rotating_subspace, S4_state_independent, S5_overlap_artefact]
