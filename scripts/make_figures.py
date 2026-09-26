@@ -14,7 +14,7 @@ import numpy as np
 from scripts import gate_a_spectrum as GA
 from scripts import gate_b_pca as GB
 from scripts.prereg import ROOT, load_cfg, read_npz
-from scripts.verdict import RECORD
+from scripts.verdict import RECORD, available_seeds, paired_control_seed
 
 SEED_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]     # categorical slots 1-3, fixed order
 CONTROL_GREY = "#8a8a85"
@@ -38,6 +38,8 @@ def fig1_spectra(res, cfg, out):
 	fig, ax = grid(cfg, f"Pooled Hankel singular values, H = {H0} (σ/σ₁)")
 	for task, a in ax.items():
 		for i, s in enumerate(cfg["models"]["seeds"]):
+			if s not in available_seeds(res, cfg, task):
+				continue
 			f = read_npz(res / "hsv" / f"{task}_s{s}_H{H0}.npz")
 			h = f[f"{RECORD}_hsv"][:kmax + 8]
 			a.semilogy(np.arange(1, len(h) + 1), h / h[0], color=SEED_COLORS[i], label=f"seed {s}")
@@ -45,7 +47,7 @@ def fig1_spectra(res, cfg, out):
 			if ks > 0:
 				a.axvline(ks + 0.5, color=SEED_COLORS[i], lw=0.8, ls=(0, (2, 2)))
 		for tag, ls, lab in (("rfull", "--", "R-full controls"), ("rdyn", ":", "R-dyn controls")):
-			for j, ts in enumerate(cfg["gap"]["random_init_controls"]["torch_seeds"]):
+			for j, ts in enumerate(paired_control_seed(cfg, s) for s in available_seeds(res, cfg, task)):
 				h = read_npz(res / "hsv" / f"{task}_{tag}{ts}_H{H0}.npz")[f"{RECORD}_hsv"][:kmax + 8]
 				if h[0] > 0:
 					a.semilogy(np.arange(1, len(h) + 1), h / h[0], color=CONTROL_GREY, ls=ls, lw=1.0,
@@ -66,6 +68,8 @@ def fig2_log_drops(res, cfg, out):
 	fig, ax = grid(cfg, f"Log-drops d_k at H = {H0}, with the §7 thresholds")
 	for task, a in ax.items():
 		for i, s in enumerate(cfg["models"]["seeds"]):
+			if s not in available_seeds(res, cfg, task):
+				continue
 			hsv = read_npz(res / "hsv" / f"{task}_s{s}_H{H0}.npz")[f"{RECORD}_hsv"]
 			d = GA.log_drops(hsv, cfg["gramians"]["numerical_floor_rel"])
 			ks = np.arange(1, kmax + 1)
@@ -92,6 +96,8 @@ def fig3_spearman(res, cfg, out):
 	for task, a in ax.items():
 		rhos = []
 		for i, s in enumerate(cfg["models"]["seeds"]):
+			if s not in available_seeds(res, cfg, task):
+				continue
 			f = read_npz(res / "work" / f"{task}_s{s}.npz")
 			h = GB.hankel_importance(f[f"{RECORD}_diag_c"], f[f"{RECORD}_diag_o"])
 			v = f["Z"].var(axis=0)
@@ -110,7 +116,8 @@ def fig4_angles(res, cfg, out, verdict):
 	fig, a = plt.subplots(figsize=(8, 3.4), constrained_layout=True)
 	w = 0.25
 	for i, s in enumerate(cfg["models"]["seeds"]):
-		th = [json.loads((res / "pca" / f"{t}_s{s}.json").read_text())[RECORD]["theta_pca_deg"] for t in tasks]
+		th = [json.loads((res / "pca" / f"{t}_s{s}.json").read_text())[RECORD]["theta_pca_deg"]
+			  if s in available_seeds(res, cfg, t) else np.nan for t in tasks]
 		a.bar(np.arange(len(tasks)) + (i - 1) * w, th, w * 0.9, color=SEED_COLORS[i], label=f"seed {s}")
 	for j, t in enumerate(tasks):
 		k = verdict["tasks"][t]["B"]["k"]
@@ -134,7 +141,7 @@ def fig5_stability(res, cfg, out):
 	w = 0.25
 	for i, s in enumerate(cfg["models"]["seeds"]):
 		data = [json.loads((res / "stability" / f"{t}_s{s}.json").read_text())[RECORD]["anchor_angles_deg"]
-				for t in tasks]
+				if s in available_seeds(res, cfg, t) else [] for t in tasks]
 		bp = a.boxplot(data, positions=np.arange(len(tasks)) + (i - 1) * w, widths=w * 0.8,
 					   patch_artist=True, showfliers=False, medianprops={"color": INK})
 		for b in bp["boxes"]:

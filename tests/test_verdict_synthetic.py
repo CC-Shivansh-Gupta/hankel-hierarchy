@@ -66,12 +66,20 @@ def build(tmp, spec):
 	work = Path(tmp) / "work"
 	work.mkdir(parents=True)
 	rng = np.random.default_rng(0)
+	diag = Path(tmp) / "diagnostics"
+	diag.mkdir(parents=True)
 	for task, sp in spec.items():
+		excluded = sp.get("excluded")               # a seed whose converted checkpoint failed D2
 		for s, k in zip(CFG["models"]["seeds"], sp["seeds"]):
+			if s == excluded:
+				(diag / f"{task}_s{s}_conversion.json").write_text(json.dumps({"accepted": False}))
+				continue
 			trained_file(work / f"{task}_s{s}.npz", rng, k, sp.get("unstable", False), sp.get("pca_like", False))
 		for tag in ("rfull", "rdyn"):
-			for ts, k in zip(CFG["gap"]["random_init_controls"]["torch_seeds"], sp.get(tag, [None] * 3)):
-				control_file(work / f"{task}_{tag}{ts}.npz", k)
+			for s, ts, k in zip(CFG["models"]["seeds"], CFG["gap"]["random_init_controls"]["torch_seeds"],
+								sp.get(tag, [None] * 3)):
+				if s != excluded:
+					control_file(work / f"{task}_{tag}{ts}.npz", k)
 
 
 def run(spec):
@@ -134,10 +142,37 @@ def test_instability_kills_gate_c():
 	assert s["counts_of_6_tasks"]["C"] == 3 and not s["gates"]["C"] and not s["overall_survives"]
 
 
+def test_excluded_seed_makes_rules_two_of_two():
+	"""D2: with seed 3 excluded, a task passes only if BOTH remaining seeds pass."""
+	spec = base_spec()
+	spec[TASKS[4]] = {"seeds": [6, 6, None], "excluded": 3}          # 2 of 2 have the gap: pass
+	s, files, _ = run(spec)
+	assert s["tasks"][TASKS[4]]["A"]["pass"] and s["counts_of_6_tasks"]["A"] == 5
+	assert f"pca/{TASKS[4]}_s3.json" not in files and f"hsv/{TASKS[4]}_rfull1002_H64.npz" not in files
+	spec[TASKS[4]] = {"seeds": [6, None, 6], "excluded": 3}          # only 1 of 2: fail
+	s, _, _ = run(spec)
+	assert not s["tasks"][TASKS[4]]["A"]["pass"]
+	spec[TASKS[4]] = {"seeds": [6, 6, None], "excluded": 3, "rdyn": [6, 6, None]}   # 2 of 2 controls reproduce
+	s, _, _ = run(spec)
+	assert not s["tasks"][TASKS[4]]["A"]["pass"]
+
+
+def test_missing_file_without_exclusion_is_an_error():
+	with tempfile.TemporaryDirectory() as tmp:
+		build(tmp, base_spec())
+		(Path(tmp) / "work" / f"{TASKS[0]}_s2.npz").unlink()
+		try:
+			V.load(tmp, CFG)
+		except FileNotFoundError:
+			return
+	raise AssertionError("a silently missing model must not be dropped")
+
+
 def test_figures_render():
 	from scripts import make_figures as MF
 	spec = base_spec()
 	spec[TASKS[1]]["rfull"] = [6, None, None]
+	spec[TASKS[4]] = {"seeds": [None, None, None], "excluded": 3}
 	with tempfile.TemporaryDirectory() as tmp:
 		build(tmp, spec)
 		models, controls = V.load(tmp, CFG)

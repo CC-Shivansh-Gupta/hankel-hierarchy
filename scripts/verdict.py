@@ -49,7 +49,7 @@ def decide(models, controls, cfg, route):
 	out = {"tasks": {}, "per_model": {}}
 
 	for task in cfg["models"]["tasks"]:
-		seeds = cfg["models"]["seeds"]
+		seeds = sorted(models[task])          # 3, or 2 after a D2 exclusion
 		# Gate A
 		kstars, per_model = [], {}
 		for s in seeds:
@@ -116,6 +116,23 @@ def _jsonable(x):
 	return x
 
 
+def paired_control_seed(cfg, seed):
+	"""C10: torch seed 1000/1001/1002 pairs with trained seed 1/2/3."""
+	return cfg["gap"]["random_init_controls"]["torch_seeds"][cfg["models"]["seeds"].index(seed)]
+
+
+def available_seeds(results_dir, cfg, task):
+	"""The protocol seeds, minus any converted checkpoint that failed its D2 return check. A missing
+	file without a recorded exclusion is an error, not a silent drop."""
+	out = []
+	for s in cfg["models"]["seeds"]:
+		conv = Path(results_dir) / "diagnostics" / f"{task}_s{s}_conversion.json"
+		if conv.exists() and not json.loads(conv.read_text())["accepted"]:
+			continue
+		out.append(s)
+	return out
+
+
 def load(results_dir, cfg):
 	"""Read results/work/*.npz into decide()'s inputs, per route."""
 	work = Path(results_dir) / "work"
@@ -125,7 +142,8 @@ def load(results_dir, cfg):
 	for task in cfg["models"]["tasks"]:
 		for r in ROUTES:
 			models[r][task], controls[r][task] = {}, {"r_full": [], "r_dyn": []}
-		for s in cfg["models"]["seeds"]:
+		seeds = available_seeds(results_dir, cfg, task)
+		for s in seeds:
 			f = read_npz(work / f"{task}_s{s}.npz")
 			for r in ROUTES:
 				models[r][task][s] = {
@@ -133,7 +151,7 @@ def load(results_dir, cfg):
 					"basis": f[f"{r}_basis"], "anchor_bases": f[f"{r}_anchor_bases"],
 					"diag_c": f[f"{r}_diag_c"], "diag_o": f[f"{r}_diag_o"], "Z": f["Z"]}
 		for fam, tag in (("r_full", "rfull"), ("r_dyn", "rdyn")):
-			for ts in cfg["gap"]["random_init_controls"]["torch_seeds"]:
+			for ts in [paired_control_seed(cfg, s) for s in seeds]:
 				f = read_npz(work / f"{task}_{tag}{ts}.npz")
 				for r in ROUTES:
 					controls[r][task][fam].append(f[f"{r}_hsv_H{H0}"])
@@ -146,7 +164,7 @@ def write_outputs(results_dir, cfg, decisions, models, controls):
 	for sub in ("hsv", "pca", "stability"):
 		(res / sub).mkdir(parents=True, exist_ok=True)
 	for task in cfg["models"]["tasks"]:
-		for s in cfg["models"]["seeds"]:
+		for s in sorted(models[RECORD][task]):
 			for H in horizons(cfg):
 				arrs = {}
 				for r in ROUTES:
@@ -165,7 +183,7 @@ def write_outputs(results_dir, cfg, decisions, models, controls):
 							   "anchor_angles_deg": pm[r]["anchor_angles_deg"]} for r in ROUTES}, fh, indent=1)
 		H0 = cfg["gramians"]["primary_horizon"]
 		for fam, tag in (("r_full", "rfull"), ("r_dyn", "rdyn")):
-			for i, ts in enumerate(cfg["gap"]["random_init_controls"]["torch_seeds"]):
+			for i, ts in enumerate(paired_control_seed(cfg, s) for s in sorted(models[RECORD][task])):
 				np.savez(res / "hsv" / f"{task}_{tag}{ts}_H{H0}.npz",
 						 **{f"{r}_hsv": controls[r][task][fam][i] for r in ROUTES})
 
