@@ -86,3 +86,27 @@ mujoco 3.1.2. Both predate NumPy 2 and fail to import on the run platform (Kaggl
 on an earlier simulator. Episode returns are reported next to the published TD-MPC2 curves (`results/tdmpc2/*.csv` in
 the pinned repo), so any drift in behaviour is visible. Returns carry no verdict role. *(Decided before any checkpoint
 was loaded.)*
+
+---
+
+## D2: one released checkpoint needs a key-renaming step to load (§3)
+
+**What was found** (diagnostic run, 26 Sep 2026). `humanoid-walk-3.pt` passes its SHA-256 check but will not load in
+the pinned code. It was uploaded on 24 Oct 2023, a day before TD-MPC2's first public commit, and it stores flat
+`Sequential`s (Linear, LayerNorm, Mish, …) where the pinned code has `NormedLinear` blocks (a Linear with `.ln`).
+Every other checkpoint loaded so far (14 of 14) loaded unchanged.
+
+**Change.** `convert_flat_layout` in `scripts/collect_anchors.py` renames the keys. No tensor is altered. Every
+Linear and LayerNorm maps one to one, and the renamed set equals the model's key set exactly. One assumption cannot
+be checked from key names: the old encoder's index 0 has no parameters, and it is taken to be the identity.
+
+**Acceptance rule, fixed before the conversion was first run.** The converted model is analysed only if its mean
+return over the 10 protocol episodes reaches **0.8×** its published final return (893 for humanoid-walk seed 3,
+`results/tdmpc2/humanoid-walk.csv` at the pinned commit). A wrong identity assumption would feed the encoder
+mis-transformed observations, and returns would collapse. If it fails, humanoid-walk-3 is **excluded**. The task is
+then judged on seeds 1 and 2, and both must pass each gate (the "≥ 2 of 3" rules become "2 of 2"). Either outcome is
+recorded in `results/diagnostics/humanoid-walk_s3_conversion.json`.
+
+**Also recorded here.** Every model analysed so far has episode returns within the spread of TD-MPC2's published
+finals (walker-walk 984 vs 977–983, quadruped-run ≈955 vs 952–956, humanoid-walk 913/927 vs 902/906). So the C11
+simulator change has not visibly altered behaviour.

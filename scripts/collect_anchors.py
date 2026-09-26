@@ -84,6 +84,47 @@ def check_architecture(cfg, model):
 	assert repr(model._encoder["state"][-1].act) == f"SimNorm(dim={exp['simnorm_group']})"
 
 
+# DEVIATIONS.md D2: humanoid-walk-3.pt (uploaded 24 Oct 2023) predates the first public TD-MPC2 commit.
+# It stores flat Sequentials (Linear, LayerNorm, Mish, ...) where the pinned code has NormedLinear blocks
+# (Linear with .ln). The weights are only renamed, never altered. The old encoder's index 0 has no
+# parameters and is taken to be the identity. A converted checkpoint is analysed only if its mean
+# return reaches CONVERTED_MIN_RETURN_FRAC of its published final return (results/tdmpc2/*.csv at the
+# pinned commit). Both rules were fixed before the conversion was ever run.
+CONVERTED_MIN_RETURN_FRAC = 0.8
+FLAT = {"enc": {1: "0.", 2: "0.ln.", 4: "1.", 5: "1.ln."},
+		"mlp": {0: "0.", 1: "0.ln.", 3: "1.", 4: "1.ln.", 6: "2."}}
+
+
+def convert_flat_layout(sd):
+	"""Returns (state_dict, converted?). Only renames keys; every tensor is passed through unchanged."""
+	if "_dynamics.0.0.weight" not in sd:
+		return sd, False
+	out = {}
+	for key, val in sd.items():
+		head, _, rest = key.partition(".")
+		if key.startswith("_encoder.state."):
+			idx, leaf = key[len("_encoder.state."):].split(".", 1)
+			out["_encoder.state." + FLAT["enc"][int(idx)] + leaf] = val
+		elif key.startswith("_dynamics.0."):
+			idx, leaf = key[len("_dynamics.0."):].split(".", 1)
+			out["_dynamics." + FLAT["mlp"][int(idx)] + leaf] = val
+		elif key.startswith("_dynamics.1."):
+			out["_dynamics.2.ln." + key[len("_dynamics.1."):]] = val
+		elif head in ("_reward", "_pi"):
+			idx, leaf = rest.split(".", 1)
+			out[f"{head}." + FLAT["mlp"][int(idx)] + leaf] = val
+		else:
+			out[key] = val
+	return out, True
+
+
+def published_final_return(T, task, seed):
+	import csv
+	rows = [r for r in csv.DictReader(open(T["root"].parent / "results" / "tdmpc2" / f"{task}.csv"))
+			if int(r["seed"]) == seed]
+	return float(max(rows, key=lambda r: float(r["step"]))["reward"])
+
+
 def sha256(path):
 	h = hashlib.sha256()
 	with open(path, "rb") as f:
@@ -231,7 +272,9 @@ def run_task(T, task, ckpt_dir, out, device):
 		cfg = make_cfg(T, task, ckpt)
 		T["make_env"](cfg)                            # fills obs_shape, action_dim, episode_length
 		agent = T["TDMPC2"](cfg)
-		agent.load(str(ckpt))
+		raw = torch.load(str(ckpt), map_location=device, weights_only=False)
+		sd, converted = convert_flat_layout(raw["model"] if "model" in raw else raw)
+		agent.load(sd)
 		check_architecture(cfg, agent.model)
 
 		# 1. rollouts
@@ -240,6 +283,17 @@ def run_task(T, task, ckpt_dir, out, device):
 			O, A, R = rollout(T, cfg, agent, e)
 			trajs_raw.append((O, A))
 			returns.append(float(R.sum()))
+		if converted:
+			pub = published_final_return(T, task, seed)
+			ok = np.mean(returns) >= CONVERTED_MIN_RETURN_FRAC * pub
+			rec = {"checkpoint": name, "converted_from_flat_layout": True, "episode_returns": returns,
+				   "published_final_return": pub, "threshold_frac": CONVERTED_MIN_RETURN_FRAC, "accepted": bool(ok)}
+			with open(diag_dir / f"{task}_s{seed}_conversion.json", "w") as fh:
+				json.dump(rec, fh, indent=1)
+			print(f"{task} s{seed}: converted checkpoint, mean return {np.mean(returns):.1f} vs published {pub:.1f}"
+				  f" -> {'ACCEPTED' if ok else 'EXCLUDED'}", flush=True)
+			if not ok:
+				continue
 		np.savez(traj_dir / f"{task}_s{seed}.npz", obs=np.stack([o for o, _ in trajs_raw]),
 				 actions=np.stack([a for _, a in trajs_raw]), returns=np.array(returns))
 
