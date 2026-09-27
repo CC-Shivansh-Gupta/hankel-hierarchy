@@ -3,8 +3,19 @@
 Logged under PREREGISTRATION.md §14. The preregistration commit is
 `0173614f918c0828b0f978378f1c0c2807be9990`. Its files are never edited. Every change is recorded here instead.
 
-Every entry below was written on **26 Sep 2026**. At that time no checkpoint had been downloaded, loaded or run.
-The analysis code had been run only on the synthetic systems of §13.
+**When each entry was written, and what had been seen.** Every entry is dated 26 Sep 2026. Each entry's first commit
+is given here.
+
+- **D1 and C1–C5** (`7fa0c6b`) and **C6–C10** (`5bd91b9`): no checkpoint had been downloaded, loaded or run. The
+  analysis code had been run only on the synthetic systems of §13.
+- **C11** (`7a85331`, `62d39a7`): still no trained checkpoint loaded. Only the random-init smoke test (C9) had run.
+- **D2** (`9163ef2`): written **after** Kaggle run 1. That run had loaded 14 of the 18 trained checkpoints and written
+  their outputs on the run machine. At writing time, the only things seen were the run log, meaning the episode
+  returns and the load error for `humanoid-walk-3.pt`. No Gramian, HSV, gap or subspace statistic of any model had
+  been inspected. D2's acceptance rule was fixed before the converted checkpoint was first run.
+
+*Correction, 27 Sep 2026.* An earlier version of this header said all entries predated any checkpoint load. That was
+true for everything except D2. This paragraph replaces it, and the git history keeps the original.
 
 ---
 
