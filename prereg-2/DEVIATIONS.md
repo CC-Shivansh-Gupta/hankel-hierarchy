@@ -81,3 +81,34 @@ edited to correct that line.
 
 **Process rule from here on.** After a freeze SHA is sent, nothing result-bearing runs until the reviewer gives an
 explicit go-ahead.
+
+## P2: result package assembled after the outcome was released (additions only; no verdict involved), 28 Sep 2026
+
+The reviewer asked for the retained result package from the existing run on 28 Sep 2026: output paths, an execution
+receipt, and the H2.1–H2.3 verdict mapping under `c2474be`. Only after that release were the per-model statistics
+inspected. First, the three digests recorded in P1 were recomputed and matched. The run was not repeated, and no
+file in `results2/` was changed. The result commit adds the following, all of it written after the outcome was known:
+
+1. **`scripts/h2_report.py`, `RESULTS2-tables.md`, `figures/fig6_h2_primary.pdf`.** These are tables and a plot of
+   the §5 statistics already stored in `results2/work/`. The script re-derives each §5 condition, and it asserts that
+   its per-model pass/fail equals the per-seed decisions in `results2/verdict.json`. It computes no new verdict-bearing
+   quantity. §10 lists "the figures", but the code at `c80ff84` produced none for protocol 2, so this plot was drawn
+   afterwards. It is written outside `results2/`, so that directory stays byte-identical to the P1 digests.
+2. **The §5.2 "reported, no verdict role" gap rule** was not computed by the run's code. It is computed in
+   `h2_report.py` from the stored `hsv_growth_normalised`, with the protocol-1 §7 conditions 1–4 and the protocol-1
+   gap config, at H = 64 only. This construction has no H = 32/128 spectra, so the horizon-reappearance condition
+   cannot be applied. It is exploratory.
+3. **The discovery set was not run.** §10 lists `results2/discovery/`, but that is optional for the confirmatory
+   record, and it is absent. If it is run later, it goes in a separate commit labelled exploratory, with the same code
+   at `c80ff84`. It cannot affect any verdict (§3, §7.1).
+4. **`ENVIRONMENT.txt` records `dm_control ?`.** The version probe found no `__version__` attribute. The installed
+   version is the pinned `dm-control==1.0.24` in `requirements-tdmpc2.txt`, which `reproduce.sh setup` installs. mujoco
+   3.2.4 is recorded directly.
+5. **Two copies of the verdict file.** `results2/verdict.json` in the sealed directory is the local recomputation
+   (P1). Windows wrote it with CRLF line endings. With the CRs removed, its SHA-256 equals that of
+   `results2_verdict_kaggle.json`, which is the byte-exact file from the Kaggle archive. Every other file in
+   `results2/` is byte-identical to the archive. Both verdict files are committed as they were sealed, and the
+   Kaggle one is the run's own output.
+
+No threshold, task, seed, route, control, statistic or rule was changed, and the frozen files are byte-identical to
+`c2474be`.

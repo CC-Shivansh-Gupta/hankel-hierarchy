@@ -1,0 +1,303 @@
+{
+ "label": "CONFIRMATORY (held-out, verdict-bearing)",
+ "protocol_version": 2,
+ "deciding_route": "factor",
+ "verdicts": {
+  "H2.1": "REJECTED",
+  "H2.2": "REJECTED",
+  "H2.3": "REJECTED"
+ },
+ "tasks_supporting": {
+  "H2.1": 0,
+  "H2.2": 0,
+  "H2.3": 0
+ },
+ "tasks": {
+  "reacher-hard": {
+   "H2.1": false,
+   "H2.2": false,
+   "H2.3": false,
+   "n_seeds": 3,
+   "per_seed": [
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    }
+   ]
+  },
+  "finger-turn-hard": {
+   "H2.1": false,
+   "H2.2": false,
+   "H2.3": false,
+   "n_seeds": 3,
+   "per_seed": [
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    }
+   ]
+  },
+  "hopper-stand": {
+   "H2.1": false,
+   "H2.2": false,
+   "H2.3": false,
+   "n_seeds": 3,
+   "per_seed": [
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    }
+   ]
+  },
+  "walker-run": {
+   "H2.1": false,
+   "H2.2": false,
+   "H2.3": false,
+   "n_seeds": 3,
+   "per_seed": [
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    }
+   ]
+  },
+  "quadruped-walk": {
+   "H2.1": false,
+   "H2.2": false,
+   "H2.3": false,
+   "n_seeds": 3,
+   "per_seed": [
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    }
+   ]
+  },
+  "humanoid-run": {
+   "H2.1": false,
+   "H2.2": false,
+   "H2.3": false,
+   "n_seeds": 2,
+   "per_seed": [
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    },
+    {
+     "H2.1": false,
+     "H2.2": false,
+     "H2.3": false
+    }
+   ]
+  }
+ },
+ "excluded_load_failures": [],
+ "route_disagreements": [],
+ "gramian_route": {
+  "tasks": {
+   "reacher-hard": {
+    "H2.1": false,
+    "H2.2": false,
+    "H2.3": false,
+    "n_seeds": 3,
+    "per_seed": [
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     }
+    ]
+   },
+   "finger-turn-hard": {
+    "H2.1": false,
+    "H2.2": false,
+    "H2.3": false,
+    "n_seeds": 3,
+    "per_seed": [
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     }
+    ]
+   },
+   "hopper-stand": {
+    "H2.1": false,
+    "H2.2": false,
+    "H2.3": false,
+    "n_seeds": 3,
+    "per_seed": [
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     }
+    ]
+   },
+   "walker-run": {
+    "H2.1": false,
+    "H2.2": false,
+    "H2.3": false,
+    "n_seeds": 3,
+    "per_seed": [
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     }
+    ]
+   },
+   "quadruped-walk": {
+    "H2.1": false,
+    "H2.2": false,
+    "H2.3": false,
+    "n_seeds": 3,
+    "per_seed": [
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     }
+    ]
+   },
+   "humanoid-run": {
+    "H2.1": false,
+    "H2.2": false,
+    "H2.3": false,
+    "n_seeds": 2,
+    "per_seed": [
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     },
+     {
+      "H2.1": false,
+      "H2.2": false,
+      "H2.3": false
+     }
+    ]
+   }
+  },
+  "hypotheses": {
+   "H2.1": {
+    "tasks_supporting": 0,
+    "verdict": "REJECTED"
+   },
+   "H2.2": {
+    "tasks_supporting": 0,
+    "verdict": "REJECTED"
+   },
+   "H2.3": {
+    "tasks_supporting": 0,
+    "verdict": "REJECTED"
+   }
+  }
+ }
+}

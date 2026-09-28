@@ -14,3 +14,7 @@ Every numeric parameter is in [`config/prereg.yaml`](config/prereg.yaml).
 3. The planning experiments (D–G) stay sealed unless all three gates pass.
 
 Negative results are kept and reported.
+
+**Protocol 2** (a new hypothesis, not a revision) is preregistered in [`prereg-2/`](prereg-2/PREREGISTRATION.md),
+frozen at `c2474be`. Its held-out verdict and result package are in [`RESULTS2.md`](RESULTS2.md), and its deviations
+are in [`prereg-2/DEVIATIONS.md`](prereg-2/DEVIATIONS.md).
