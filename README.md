@@ -18,3 +18,6 @@ Negative results are kept and reported.
 **Protocol 2** (a new hypothesis, not a revision) is preregistered in [`prereg-2/`](prereg-2/PREREGISTRATION.md),
 frozen at `c2474be`. Its held-out verdict and result package are in [`RESULTS2.md`](RESULTS2.md), and its deviations
 are in [`prereg-2/DEVIATIONS.md`](prereg-2/DEVIATIONS.md).
+
+**Closeout.** This track is closed as a negative result. [`NOTE.md`](NOTE.md) is the technical note covering both
+studies.
